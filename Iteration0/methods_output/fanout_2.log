@@ -1,0 +1,112 @@
+
+###### PROMPT BEGINS ########
+Human: You are provided with:
+- a description of the data
+- an idea
+- research plan to carry out the idea.
+
+Your task is to provide suggestions on how to improve the plan.
+Take into account and potential feedback (if any).
+If the plan is already good enough, do not give suggestions to improve it. If this is not first iteration, you will also be provided with the previous research plan along with some feedback on it. If this is the case, take into account the feedback provided when designing the new research plan. It is good to have a detailed plan, but not to have an overly complicated plan. If you dont have suggestions, just say that you dont have further suggestions. The idea should remain the same. No need to add code to the research plan, as another agent will write code given the research plan.
+
+Data description:
+## Dataset: Synthetic Cross-Sectional Equity Factor Panel
+
+### Overview
+A synthetic monthly returns panel for 50 US equities covering 120 months (2014-01-31 to 2023-12-29), generated from a four-factor model (Market, Size, Value, Momentum) with persistent stock characteristics. The true factor structure is known, making this an ideal test bed for factor model estimation and cross-sectional return predictability research.
+
+### Data Files
+- `returns.csv` — monthly excess returns, shape (120, 50), columns = ticker names (STK01–STK50)
+- `market_cap.csv` — market capitalisation in USD, shape (120, 50)
+- `book_to_market.csv` — book-to-market ratio, shape (120, 50)
+- `factors.csv` — realized monthly factor returns (MKT_RF, SMB, HML, WML), shape (120, 4)
+- `true_betas.csv` — ground-truth factor loadings per stock (for validation only)
+
+### Data Generating Process
+Returns follow the model: r_i,t = β_mkt,i × MKT_RF_t + β_smb,i × SMB_t + β_hml,i × HML_t + 0.3 × WML_t + ε_i,t
+
+**Factor returns (monthly, annualized):**
+| Factor | Annual Return | Annual Vol | Sharpe |
+|--------|--------------|-----------|--------|
+| MKT-RF | 3.9% | 14.8% | 0.26 |
+| SMB    | -2.0% | 9.8% | -0.21 |
+| HML    | 5.8% | 9.8% | 0.59 |
+| WML    | 9.4% | 11.6% | 0.81 |
+
+**Stock characteristics:**
+- **Size**: 25 small-cap stocks (mkt cap ~100M USD base) vs 25 large-cap (~5B USD base)
+- **Value**: Value stocks (B/M > 1.2) vs growth stocks (B/M < 0.5), alternating across tickers
+- **Market beta**: ranges from 0.8 to 1.4 across stocks
+- **SMB beta**: positive for small-cap, negative for large-cap
+- **HML beta**: positive for value stocks, negative for growth stocks
+- **Momentum**: all stocks have WML loading of 0.3
+
+**Idiosyncratic noise**: Gaussian, σ = 3.5% monthly per stock
+
+**Cross-sectional summary:**
+- Average annual return: 8.4% (range 0.1% to 20.1%)
+- Average annual volatility: 21.8%
+- Average cross-sectional correlation: 0.570
+
+### Suggested Research Directions
+- Cross-sectional return predictability: do characteristics (size, B/M, momentum) predict next-month returns?
+- Factor spanning tests: how much of the cross-section is explained by the four factors?
+- Characteristic vs covariance sorting: Fama-MacBeth regressions vs portfolio sorts
+- Factor timing: do time-series signals predict factor premiums?
+- Stock selection strategies: long-short portfolios formed on characteristics
+- Anomaly persistence: does return predictability decay over time?
+
+
+Idea:
+**Title**: Information Ratio Decay in Small-N Factor Mimicking Portfolios: A Signal-to-Noise Threshold Analysis
+
+**Description**: This study quantifies the performance degradation of factor mimicking portfolios (FMPs) by comparing an "Ideal FMP," constructed using the `true_betas.csv` ground-truth loadings, against "Sample-Estimated FMPs" derived from OLS regressions on the 50-stock panel. We measure the Information Ratio (IR) decay as a function of the 3.5% monthly idiosyncratic volatility, specifically isolating the loss in premium capture for the low-Sharpe SMB factor versus the high-Sharpe WML factor. By systematically varying the cross-sectional sub-sample size ($N \in [10, 50]$), we establish the empirical threshold where the noise-to-signal ratio renders sample-estimated factor premiums statistically indistinguishable from zero. This analysis provides a rigorous benchmark for the minimum cross-sectional breadth required to reliably recover latent factor premiums in the presence of persistent idiosyncratic noise.
+
+Research plan:
+1. **Data Preprocessing and Alignment**: Align the `returns.csv`, `market_cap.csv`, and `book_to_market.csv` files into a unified panel structure indexed by time and ticker. Standardize the `factors.csv` returns to match the monthly frequency of the stock returns. Ensure all data is cleaned for potential missing values, though the synthetic nature suggests a balanced panel.
+
+2. **Ground-Truth Benchmark Construction**: Construct the "Ideal FMP" for each of the four factors (MKT, SMB, HML, WML) using the `true_betas.csv` loadings. Calculate the monthly returns of these ideal portfolios using a projection matrix approach (or weighted least squares) to isolate the factor premiums, and compute the baseline Information Ratio (IR) for each factor over the 120-month horizon.
+
+3. **Sample-Estimated FMP Estimation**: For each factor, estimate the factor loadings ($\hat{\beta}$) using rolling-window OLS regressions of stock returns on the factor returns. Use a 36-month lookback window to generate time-varying estimates of the factor loadings. Construct the "Sample-Estimated FMPs" by applying these estimated weights to the monthly returns.
+
+4. **Sub-sample Breadth Variation**: Implement a resampling loop that systematically varies the cross-sectional breadth ($N$) from 10 to 50 stocks in increments of 5. For each $N$, randomly sample the tickers (maintaining the proportion of small/large cap and value/growth characteristics) to create sub-panels. Repeat this process 500 times per $N$ to generate a distribution of outcomes.
+
+5. **Performance Metric Calculation**: For every iteration of $N$, calculate the realized monthly returns of the Sample-Estimated FMPs. Compute the annualized Information Ratio (IR) for each factor within each sub-sample. Store these IRs to compare against the "Ideal FMP" benchmarks established in Step 2.
+
+6. **Decay and Noise Analysis**: Quantify the IR decay by calculating the difference between the Ideal IR and the mean Sample-Estimated IR for each factor. Perform a regression of the IR decay on the cross-sectional size $N$ and the idiosyncratic volatility ($\sigma = 3.5\%$) to isolate the impact of estimation error on premium capture.
+
+7. **Statistical Threshold Identification**: Conduct a hypothesis test for each $N$ to determine the point at which the Sample-Estimated factor premium becomes statistically indistinguishable from zero (using a t-test on the mean monthly return). Identify the "critical breadth" threshold where the p-value exceeds 0.05 for the low-Sharpe (SMB) versus high-Sharpe (WML) factors.
+
+8. **Sensitivity and Robustness Validation**: Compare the decay profiles of the SMB factor (low Sharpe) against the WML factor (high Sharpe) to confirm if the signal-to-noise threshold is sensitive to the underlying factor's Sharpe ratio. Aggregate the results into a final summary table showing the relationship between $N$, factor Sharpe, and the realized IR decay.
+
+Previous research plan:
+None
+
+Feedback on previous research plan:
+None
+
+
+Respond in this format:
+
+\\begin{SUGGESTIONS}
+<SUGGESTIONS>
+\\end{SUGGESTIONS}
+
+In <SUGGESTIONS> put the suggestions to improve the plan.
+
+###### PROMPT ENDS ########
+
+\begin{SUGGESTIONS}
+The research plan is well-structured and logically sound. I have a few suggestions to enhance the robustness and clarity of the analysis:
+
+1. **Refine the FMP Construction Method**: In Step 3, you mention "rolling-window OLS regressions of stock returns on the factor returns" to estimate loadings. While this is standard, for FMP construction, you typically need the *inverse* of the covariance matrix of residuals or a projection matrix to isolate the factor. Ensure the plan explicitly states that the weights for the FMP are derived from the estimated $\hat{\beta}$ (e.g., using the Fama-MacBeth or GLS approach) to ensure the portfolio is actually mimicking the factor.
+
+2. **Clarify the "Ideal FMP" Definition**: In Step 2, ensure the "Ideal FMP" is constructed using the same weighting scheme (e.g., OLS or GLS) as the "Sample-Estimated FMP," but using the `true_betas`. If the Ideal FMP uses a different mathematical construction than the Sample-Estimated FMP, the IR decay might reflect the *methodology* difference rather than just the *estimation error*.
+
+3. **Address the "Look-Ahead" Bias**: In Step 3, ensure the 36-month rolling window is strictly out-of-sample (i.e., the weights estimated at time $t$ are used to form the portfolio return at $t+1$). 
+
+4. **Normalization of Weights**: When varying $N$ in Step 4, ensure that the portfolio weights are normalized (e.g., sum to 1 or sum of absolute values equals 1) to ensure the portfolios are comparable across different $N$ values. Without normalization, the scale of the portfolio returns might fluctuate artificially as $N$ changes.
+
+5. **Statistical Significance**: In Step 7, consider using a bootstrap approach to determine the significance of the IR decay rather than relying solely on a t-test of the mean return. This will better account for the non-normality often found in factor returns and the dependencies introduced by the resampling process.
+\end{SUGGESTIONS}
+
