@@ -1,0 +1,64 @@
+{
+    "sub_tasks": [
+        {
+            "bullet_points": [
+                "Load returns.csv, market_cap.csv, book_to_market.csv, factors.csv, and true_betas.csv.",
+                "Create a multi-index DataFrame (Time, Ticker) containing all stock-level data.",
+                "Verify data integrity and handle any missing values or alignment issues.",
+                "Save the cleaned panel as a single file for subsequent steps."
+            ],
+            "sub_task": "Load all provided CSV files, align them into a unified panel indexed by time and ticker, and standardize the factor returns to monthly frequency.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "Use the residual covariance matrix (estimated from full-sample OLS residuals against the four factors) as the Σ matrix in the projection formula w = Σ^-1β(β'Σ^-1β)^-1.",
+                "Compute Ideal FMP returns as the dot product of time-invariant weights with the full time-series of stock returns.",
+                "Define IR as the annualized mean divided by the annualized standard deviation of the FMP return series.",
+                "Save the Ideal IR values to a results file."
+            ],
+            "sub_task": "Construct the \"Ideal FMP\" using ground-truth loadings and calculate baseline performance metrics.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "Use a 36-month rolling window ending at t-1 to estimate both β̂ and the residual covariance matrix.",
+                "Apply weights to month t returns.",
+                "Ensure the out-of-sample FMP return series begins at month 37.",
+                "Compute the annualized IR for the sample-estimated FMP over the out-of-sample period (months 37-120) and evaluate the Ideal FMP over the same window for fair comparison."
+            ],
+            "sub_task": "Implement a 36-month rolling-window estimation to generate time-varying factor loadings (β̂) and construct Sample-Estimated FMPs.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "Iterate N from 10 to 50 in increments of 5.",
+                "Stratify random ticker sampling to preserve small/large-cap and value/growth proportions proportionally to N.",
+                "Perform 500 random iterations per N, using the out-of-sample window (months 37-120) consistently.",
+                "Save the distribution of IRs for each N and each factor."
+            ],
+            "sub_task": "Systematically vary the cross-sectional breadth (N) and compute performance distributions.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "Calculate mean IR decay (Ideal IR - Sample IR) and apply Newey-West standard errors (lag = integer part of 4*(T/100)^(2/9)).",
+                "Identify \"critical breadth\" threshold for each factor as the smallest N where the Newey-West t-statistic of the mean FMP return exceeds 1.96.",
+                "Produce a multi-panel figure: (a) IR ratio decay curves with shaded inter-quartile ranges, (b) mean annualized factor premium with 95% confidence bands vs N.",
+                "Print and save a summary table (CSV) containing Ideal IR, mean Sample IR, IR ratio, mean premium, SE, t-stat, and critical breadth."
+            ],
+            "sub_task": "Quantify IR decay, identify statistical thresholds, and generate the final multi-panel figure.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "Explicitly reference numerical values from the summary table (Ideal IR, critical thresholds, IR ratios at N=50 vs N=10).",
+                "Discuss the theoretical relationship between the noise-to-signal ratio (idiosyncratic volatility / factor premium) and the observed critical breadth.",
+                "Contrast the recovery challenge of the SMB factor (negative Sharpe) against the WML factor (high Sharpe).",
+                "Synthesize findings on the minimum cross-sectional breadth required for reliable factor premium recovery."
+            ],
+            "sub_task": "Write the full Results section of the research report.",
+            "sub_task_agent": "researcher"
+        }
+    ]
+}
