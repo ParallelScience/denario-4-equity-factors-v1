@@ -1,0 +1,9 @@
+The observed failure to achieve statistical significance (t-statistics < 1.96) and the "curse of dimensionality" (rank-deficiency of the covariance matrix) are directly attributable to constraints described in the dataset:
+
+1. **Constraint: Idiosyncratic Noise ($\sigma = 3.5\%$ monthly)**: The dataset description explicitly defines a high level of idiosyncratic noise. The analysis results confirm this noise floor is the primary driver for the failure to recover latent factor premiums, as it cannot be sufficiently diversified away within the limited $N=50$ universe.
+
+2. **Constraint: Limited Sample Size ($N=50$) and Estimation Window ($T=36$)**: The dataset description limits the panel to 50 stocks and 120 months. The research plan uses a 36-month rolling window. The analysis correctly identifies that the requirement to estimate a covariance matrix for $N$ assets using only $T=36$ observations leads to a singular or ill-conditioned matrix when $N$ approaches $T$. This constraint explains the observed non-monotonic performance and the sharp rise in standard errors for $N > 36$.
+
+3. **Constraint: Fixed Data Generating Process**: The description notes that stock characteristics (e.g., momentum loading of 0.3) are persistent. The analysis identifies that this persistence, combined with the rolling estimation window, leads to spurious in-sample overfitting that does not generalize out-of-sample, explaining the anomalous IR ratios for Value and Momentum factors.
+
+These constraints collectively explain why the research plan's methodology (OLS-based projection matrix) fails to produce statistically significant results.
