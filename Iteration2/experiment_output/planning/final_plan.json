@@ -1,0 +1,79 @@
+{
+    "sub_tasks": [
+        {
+            "bullet_points": [
+                "Load returns.csv, factors.csv, true_betas.csv, market_cap.csv, and book_to_market.csv.",
+                "Perform a 36-month rolling OLS regression of stock returns on the MKT_RF factor only.",
+                "Calculate out-of-sample residuals for months 37–120.",
+                "Save the residual panel, aligned with the original data, and the processed characteristic files to a single consolidated file for efficient downstream I/O."
+            ],
+            "sub_task": "Estimate market betas, compute out-of-sample residuals, and consolidate all input data.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "Construct OLS-FMPs for MKT_RF, SMB, HML, and WML.",
+                "Calculate cross-sectional correlations between OLS-FMP weights and market-cap/equal-weight benchmarks.",
+                "Generate a multi-panel plot showing time-averaged weight distributions for each factor vs. benchmarks.",
+                "Print numerical cross-sectional correlations between OLS weights and market-cap weights for each factor."
+            ],
+            "sub_task": "Construct OLS-FMPs for all four factors and analyze weight alignment.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "Select sub-samples of size N in [10, 50] by ranking stocks by true SMB and HML betas.",
+                "Construct OLS-FMPs using Ledoit-Wolf shrinkage and Naive (Identity) covariance.",
+                "Calculate the \"effective number of bets\" for each configuration.",
+                "Generate a two-panel plot of concentration vs. N for SMB and WML; print concentration values at N=10, 25, 50."
+            ],
+            "sub_task": "Analyze FMP concentration across varying N using different covariance estimators.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "Sort stocks into quintiles based on residuals (for Size and B/M) and prior 12-month cumulative returns (for WML, skipping the most recent month).",
+                "Construct long-short portfolios for each characteristic.",
+                "Save the resulting time-series of long-short portfolio returns."
+            ],
+            "sub_task": "Construct long-short portfolios using residual-based and price-based sorting.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "Fix random seed; run 1000 simulation replications per (N, T) grid point.",
+                "Compute IR for SMB and WML; determine the probability of failing to reject the null hypothesis of zero premium.",
+                "Generate a heatmap plot of this probability for SMB and WML; print the threshold N where probability drops below 0.05."
+            ],
+            "sub_task": "Simulate IR distributions to identify the limit of observability.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "Calculate annualized IR for OLS-FMP (Ledoit-Wolf), OLS-FMP (Naive), and NCS portfolios.",
+                "Perform variance decomposition (Var(R_projected) / Var(R_noise)) to isolate factor capture.",
+                "Generate a multi-panel figure showing IR vs. N for each portfolio type; print variance decomposition ratios at N=10, 25, 50."
+            ],
+            "sub_task": "Compute annualized IRs and perform variance-based decomposition.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "Compute Newey-West standard errors for all portfolio returns.",
+                "Use Block Bootstrap (12-month block length, 1000 replications) to generate confidence intervals for the performance gap between OLS-FMP and NCS.",
+                "Identify the N threshold where NCS becomes statistically superior; print the threshold and associated p-values."
+            ],
+            "sub_task": "Validate performance differences using Newey-West errors and Block Bootstrap.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "Organize the Results section into subsections corresponding to Steps 1–7.",
+                "Interpret IR decay profiles, the \"success illusion,\" and the empirical breadth threshold for factor recovery.",
+                "Explicitly reference all generated plots and quote key numerical results from the engineering steps."
+            ],
+            "sub_task": "Synthesize all findings into a comprehensive Results section.",
+            "sub_task_agent": "researcher"
+        }
+    ]
+}
