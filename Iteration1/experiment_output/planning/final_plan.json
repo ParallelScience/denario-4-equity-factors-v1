@@ -1,0 +1,66 @@
+{
+    "sub_tasks": [
+        {
+            "bullet_points": [
+                "Load returns.csv, market_cap.csv, book_to_market.csv, factors.csv, and true_betas.csv.",
+                "Compute ground-truth idiosyncratic residuals ε_{i,t} by subtracting the factor component (β_{true} × F_t) from the raw returns.",
+                "Create a rolling window generator that yields indices for estimation periods [t-36, t-1] for each t ∈ [37, 120].",
+                "Save the aligned panel, residuals, and window indices to a structured format."
+            ],
+            "sub_task": "Align all input datasets and compute ground-truth idiosyncratic residuals.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "For each rolling window and each sub-sample size N ∈ [10, 50] (increments of 5), compute the rolling-window covariance matrix Σ_t.",
+                "Apply the Ledoit-Wolf shrinkage estimator to Σ_t using a constant correlation target.",
+                "Compute the \"Ideal FMP\" weights using true_betas.csv and the regularized covariance matrices.",
+                "Save the Ideal FMP weights, regularized covariance matrices, and Ideal FMP performance metrics (IR and decomposition)."
+            ],
+            "sub_task": "Implement Ledoit-Wolf shrinkage for rolling windows and compute Ideal FMP metrics.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "For each N ∈ [10, 50] (increments of 5), select the first N stocks consistently to ensure comparability.",
+                "Perform rolling OLS to estimate β̂ and construct OLS-FMP weights using the projection formula.",
+                "Construct long-short, dollar-neutral portfolios by sorting the N stocks into quintiles based on Size, B/M, and 12-1 month Momentum (computed from lagged returns).",
+                "Save the resulting portfolio returns for both strategies across all N."
+            ],
+            "sub_task": "Construct OLS-FMP and Characteristic-Sorted portfolios for varying N.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "Use the saved residuals ε_{i,t} to calculate the variance ratio Var(R_{factor}) / Var(R_{noise}) for all portfolios.",
+                "Compute the correlation between portfolio returns and target factor returns.",
+                "Calculate the annualized Information Ratio (IR) for Ideal FMP, OLS-FMP, and Characteristic-Sorted portfolios across all N.",
+                "Save the performance metrics and decomposition statistics."
+            ],
+            "sub_task": "Decompose portfolio returns and calculate annualized Information Ratios for all strategies.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "Calculate Newey-West standard errors for all portfolio returns.",
+                "Run a bootstrap analysis to generate confidence intervals for the performance difference between OLS-FMP and Characteristic-Sorted portfolios.",
+                "Produce a combined visualization that overlays the bootstrap confidence intervals directly onto the IR decay plots for SMB and WML factors.",
+                "Plot the noise-to-signal ratio as a function of N.",
+                "Save all plots as high-resolution PNG files and save the statistical validation results."
+            ],
+            "sub_task": "Generate combined IR decay plots with bootstrap confidence intervals and perform statistical validation.",
+            "sub_task_agent": "engineer"
+        },
+        {
+            "bullet_points": [
+                "Interpret the IR decay profiles and the impact of idiosyncratic noise on factor recovery.",
+                "Report key numerical thresholds: the N value where OLS-FMP IR becomes statistically indistinguishable from zero, and the N value where characteristic sorting becomes statistically superior.",
+                "Compare variance ratios at N=50 vs. N=10 for SMB and WML.",
+                "Structure the Results section with clearly labeled subsections: Ideal FMP benchmark, IR decay by N, signal-to-noise decomposition, SMB vs. WML comparison, and statistical validation.",
+                "Write the final Results section of the research paper."
+            ],
+            "sub_task": "Synthesize all quantitative results into a comprehensive report.",
+            "sub_task_agent": "researcher"
+        }
+    ]
+}
