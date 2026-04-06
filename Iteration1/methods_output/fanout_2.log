@@ -1,0 +1,140 @@
+
+###### PROMPT BEGINS ########
+Human: You are provided with:
+- a description of the data
+- an idea
+- research plan to carry out the idea.
+
+Your task is to provide suggestions on how to improve the plan.
+Take into account and potential feedback (if any).
+If the plan is already good enough, do not give suggestions to improve it. If this is not first iteration, you will also be provided with the previous research plan along with some feedback on it. If this is the case, take into account the feedback provided when designing the new research plan. It is good to have a detailed plan, but not to have an overly complicated plan. If you dont have suggestions, just say that you dont have further suggestions. The idea should remain the same. No need to add code to the research plan, as another agent will write code given the research plan.
+
+Data description:
+## Dataset: Synthetic Cross-Sectional Equity Factor Panel
+
+### Overview
+A synthetic monthly returns panel for 50 US equities covering 120 months (2014-01-31 to 2023-12-29), generated from a four-factor model (Market, Size, Value, Momentum) with persistent stock characteristics. The true factor structure is known, making this an ideal test bed for factor model estimation and cross-sectional return predictability research.
+
+### Data Files
+- `returns.csv` — monthly excess returns, shape (120, 50), columns = ticker names (STK01–STK50)
+- `market_cap.csv` — market capitalisation in USD, shape (120, 50)
+- `book_to_market.csv` — book-to-market ratio, shape (120, 50)
+- `factors.csv` — realized monthly factor returns (MKT_RF, SMB, HML, WML), shape (120, 4)
+- `true_betas.csv` — ground-truth factor loadings per stock (for validation only)
+
+### Data Generating Process
+Returns follow the model: r_i,t = β_mkt,i × MKT_RF_t + β_smb,i × SMB_t + β_hml,i × HML_t + 0.3 × WML_t + ε_i,t
+
+**Factor returns (monthly, annualized):**
+| Factor | Annual Return | Annual Vol | Sharpe |
+|--------|--------------|-----------|--------|
+| MKT-RF | 3.9% | 14.8% | 0.26 |
+| SMB    | -2.0% | 9.8% | -0.21 |
+| HML    | 5.8% | 9.8% | 0.59 |
+| WML    | 9.4% | 11.6% | 0.81 |
+
+**Stock characteristics:**
+- **Size**: 25 small-cap stocks (mkt cap ~100M USD base) vs 25 large-cap (~5B USD base)
+- **Value**: Value stocks (B/M > 1.2) vs growth stocks (B/M < 0.5), alternating across tickers
+- **Market beta**: ranges from 0.8 to 1.4 across stocks
+- **SMB beta**: positive for small-cap, negative for large-cap
+- **HML beta**: positive for value stocks, negative for growth stocks
+- **Momentum**: all stocks have WML loading of 0.3
+
+**Idiosyncratic noise**: Gaussian, σ = 3.5% monthly per stock
+
+**Cross-sectional summary:**
+- Average annual return: 8.4% (range 0.1% to 20.1%)
+- Average annual volatility: 21.8%
+- Average cross-sectional correlation: 0.570
+
+### Suggested Research Directions
+- Cross-sectional return predictability: do characteristics (size, B/M, momentum) predict next-month returns?
+- Factor spanning tests: how much of the cross-section is explained by the four factors?
+- Characteristic vs covariance sorting: Fama-MacBeth regressions vs portfolio sorts
+- Factor timing: do time-series signals predict factor premiums?
+- Stock selection strategies: long-short portfolios formed on characteristics
+- Anomaly persistence: does return predictability decay over time?
+
+
+Idea:
+**Title**: Information Ratio Decay in Small-N Factor Mimicking Portfolios: A Signal-to-Noise Threshold Analysis
+
+**Description**: This study quantifies the performance degradation of factor mimicking portfolios (FMPs) by comparing an "Ideal FMP," constructed using the `true_betas.csv` ground-truth loadings, against "Sample-Estimated FMPs" derived from OLS regressions on the 50-stock panel. We measure the Information Ratio (IR) decay as a function of the 3.5% monthly idiosyncratic volatility, specifically isolating the loss in premium capture for the low-Sharpe SMB factor versus the high-Sharpe WML factor. By systematically varying the cross-sectional sub-sample size ($N \in [10, 50]$), we establish the empirical threshold where the noise-to-signal ratio renders sample-estimated factor premiums statistically indistinguishable from zero. This analysis provides a rigorous benchmark for the minimum cross-sectional breadth required to reliably recover latent factor premiums in the presence of persistent idiosyncratic noise.
+
+Research plan:
+1. **Data Preprocessing and Rolling-Window Alignment**: Align the `returns.csv`, `market_cap.csv`, and `book_to_market.csv` into a unified panel. Implement a 36-month rolling window for all subsequent estimations. For each window $t \in [37, 120]$, define the estimation period as $[t-36, t-1]$. Ensure all factor returns are aligned to the same monthly frequency.
+
+2. **Refined Ideal FMP Benchmark**: Construct the "Ideal FMP" using the `true_betas.csv` ground-truth loadings. To ensure a fair comparison, calculate the Ideal FMP weights using the same rolling-window covariance matrix $\Sigma_t$ used by the sample-estimated models. This isolates the impact of loading estimation error from covariance estimation error.
+
+3. **Covariance Matrix Regularization**: Replace the Moore-Penrose pseudo-inverse with the Ledoit-Wolf shrinkage estimator for all covariance matrices. This ensures that the inversion process remains stable even when $N$ is large relative to $T$, preventing the generation of extreme, non-economic weights that previously plagued the $N > T$ scenarios.
+
+4. **Comparative Portfolio Construction**: For each $N \in [10, 50]$ (in increments of 5), construct two types of portfolios:
+    - **OLS-FMP**: Weights derived from the projection matrix $w = \Sigma_{shrink}^{-1}\hat{\beta}(\hat{\beta}'\Sigma_{shrink}^{-1}\hat{\beta})^{-1}$, where $\hat{\beta}$ are estimated via rolling OLS.
+    - **Characteristic-Sorted Portfolios**: Construct long-short portfolios by sorting stocks into quintiles based on their respective characteristics (Size, B/M, Momentum). This method requires no covariance inversion and serves as the structural simplicity benchmark.
+
+5. **Signal-to-Noise Decomposition**: Decompose the realized monthly returns of both portfolio types into two components:
+    - **Factor Component**: $R_{factor} = w_t' (\beta_{true} \times F_t)$, representing the captured premium.
+    - **Noise Component**: $R_{noise} = w_t' \epsilon_t$, representing the idiosyncratic volatility leakage.
+    Calculate the ratio of these components for each $N$ to quantify how much idiosyncratic noise is being inadvertently captured by the OLS-FMP weights versus the characteristic-sorted portfolios.
+
+6. **Performance Metric Calculation**: Compute the annualized Information Ratio (IR) for both the OLS-FMP and the Characteristic-Sorted portfolios across all $N$. Use the decomposition from Step 5 to explain the IR variance, specifically focusing on how the noise component grows as a function of $N$ in the OLS-FMP.
+
+7. **Robustness and Sensitivity Analysis**: Compare the decay profiles of the low-Sharpe (SMB) and high-Sharpe (WML) factors. Evaluate whether the Characteristic-Sorted portfolios maintain a higher IR than the OLS-FMP as $N$ increases, specifically testing the hypothesis that structural simplicity (sorting) outperforms statistical complexity (OLS) in small-N, high-noise environments.
+
+8. **Statistical Validation**: Apply Newey-West standard errors to the portfolio returns to account for autocorrelation. Use a bootstrap approach to generate confidence intervals for the performance difference between the OLS-FMP and the Characteristic-Sorted portfolios, confirming the breadth threshold where the structural approach becomes statistically superior.
+
+Previous research plan:
+1. **Data Preprocessing and Alignment**: Align `returns.csv`, `market_cap.csv`, and `book_to_market.csv` into a unified panel indexed by time and ticker. Standardize `factors.csv` to match the monthly frequency. Ensure the panel is balanced and handle any potential data alignment issues to ensure a consistent time-series across all variables.
+
+2. **Ideal Factor Mimicking Portfolio (FMP) Construction**: Define the "Ideal FMP" as a pure factor portfolio using the `true_betas.csv`. Construct these portfolios using the projection matrix approach $w = \Sigma^{-1}\beta(\beta'\Sigma^{-1}\beta)^{-1}$ to ensure unit exposure to the target factor and zero exposure to others. Calculate the baseline annualized Information Ratio (IR) for each of the four factors using the full 50-stock universe.
+
+3. **Sample-Estimated FMP Estimation**: Implement a 36-month rolling-window estimation to generate time-varying factor loadings ($\hat{\beta}$). To avoid look-ahead bias, use data up to month $t-1$ to estimate weights for the portfolio return at month $t$. Use the same projection matrix methodology as in Step 2, substituting true betas with estimated $\hat{\beta}$ and the sample covariance matrix of residuals, ensuring the methodology is identical to the Ideal FMP to isolate estimation error.
+
+4. **Sub-sample Breadth Variation**: Systematically vary the cross-sectional breadth ($N$) from 10 to 50 in increments of 5. For each $N$, perform 500 iterations of random ticker sampling, maintaining the original proportions of small/large cap and value/growth characteristics. Normalize portfolio weights (e.g., $\sum |w_i| = 1$) in every iteration to ensure comparability across different $N$ values.
+
+5. **Performance Metric Calculation**: For every iteration of $N$, calculate the realized monthly returns of the Sample-Estimated FMPs. Compute the annualized IR for each factor. Store these results to create a distribution of performance metrics for each $N$ and each factor, providing the basis for comparing against the Ideal FMP benchmark.
+
+6. **Decay and Noise Analysis**: Quantify IR decay as the difference between the Ideal IR and the mean Sample-Estimated IR. Regress the IR decay on $N$ and the known idiosyncratic volatility ($\sigma = 3.5\%$) to isolate the impact of estimation error. Visualize the "Decay Curves" by plotting $N$ on the x-axis and the ratio of (Sample IR / Ideal IR) on the y-axis for each factor.
+
+7. **Statistical Threshold Identification**: Use a bootstrap approach to generate confidence intervals for the IR decay and the mean monthly returns of the Sample-Estimated FMPs. Apply Newey-West standard errors to account for autocorrelation in portfolio returns. Identify the "critical breadth" threshold where the lower bound of the confidence interval for the factor premium crosses zero, comparing this threshold across factors with different Sharpe ratios (e.g., SMB vs. WML).
+
+8. **Sensitivity and Robustness Validation**: Validate the findings by comparing the decay profiles of the low-Sharpe (SMB) and high-Sharpe (WML) factors. Summarize the relationship between $N$, factor Sharpe, and realized IR decay in a final table, confirming the minimum cross-sectional breadth required to reliably recover latent factor premiums under the specified idiosyncratic noise level.
+
+Feedback on previous research plan:
+The current analysis successfully identifies the "curse of dimensionality" and the failure of the sample covariance matrix in small-$T$ environments. However, the interpretation of the "IR Ratio > 1" for HML and WML as purely "spurious overfitting" is a missed opportunity to address the fundamental flaw in the research design: the use of a **full-sample** Ideal FMP benchmark against a **rolling-window** Sample-Estimated FMP.
+
+**1. Methodological Critique:**
+*   **Benchmark Mismatch:** Comparing a rolling-window estimate (which adapts to local noise) against a full-sample Ideal FMP (which uses look-ahead information from the entire 120-month period) is a category error. The "outperformance" of the sample-estimated portfolios is likely not just overfitting, but a result of the Ideal FMP being "too static" to capture the specific realization of the synthetic noise in the out-of-sample period.
+*   **The Pseudo-Inverse Trap:** You correctly identified that the Moore-Penrose pseudo-inverse is the source of instability for $N > 36$. However, continuing to use it for $N=40$ and $N=50$ is methodologically unsound. It is well-known that inverting a singular matrix produces extreme, non-economic weights. This is not a "result" of the data; it is a failure of the estimator.
+
+**2. Actionable Improvements:**
+*   **Replace the Covariance Estimator:** Instead of the pseudo-inverse, implement a **Ledoit-Wolf shrinkage** estimator or a **diagonal (constant correlation) covariance matrix**. This is the standard industry solution for the $N > T$ problem. It will allow you to test if the "critical breadth" is a function of the *estimator* or the *data*. If the threshold remains undefined with shrinkage, you have a much stronger claim about the data's signal-to-noise ratio.
+*   **Refine the Ideal Benchmark:** Re-calculate the "Ideal FMP" using a rolling-window approach (using true betas but the same rolling covariance window as the sample-estimated version). This will isolate the impact of *loading estimation error* from *covariance estimation error*.
+*   **Shift from IR to "Signal-to-Noise" Decomposition:** Rather than focusing on the IR (which is highly sensitive to the denominator's volatility), decompose the portfolio return into the "Factor Component" (True Beta * Factor Return) and the "Noise Component" (Residuals * Weights). This will visually demonstrate exactly how much idiosyncratic noise is being "picked up" by the weights as $N$ increases.
+
+**3. Strategic Insight:**
+*   **Stop the "Search for Significance":** You have already proven that with $N=50$ and $\sigma=3.5\%$, the signal is buried. Do not spend further iterations trying to find a "critical breadth" using OLS. The next iteration should focus on **robustness to noise**.
+*   **Proposed Next Step:** Compare the performance of the OLS-based FMP against a **Characteristic-Sorted Portfolio** (e.g., quintile sorts). Characteristic sorts do not require covariance inversion and are immune to the $N > T$ singularity. If the characteristic-sorted portfolio outperforms the OLS-FMP, you have a powerful, actionable conclusion: *In small-N panels, structural simplicity (sorting) dominates statistical complexity (OLS/Markowitz).* This is a much more valuable scientific contribution than documenting the failure of an ill-conditioned matrix.
+
+
+Respond in this format:
+
+\\begin{SUGGESTIONS}
+<SUGGESTIONS>
+\\end{SUGGESTIONS}
+
+In <SUGGESTIONS> put the suggestions to improve the plan.
+
+###### PROMPT ENDS ########
+
+\begin{SUGGESTIONS}
+The current research plan is well-structured and effectively incorporates the feedback regarding covariance regularization, benchmark alignment, and the inclusion of characteristic-sorted portfolios. I have only two minor suggestions to further strengthen the rigor of the analysis:
+
+1. **Refine the Covariance Shrinkage Target**: In Step 3, specify the shrinkage target. Given the synthetic nature of the data, using a "constant correlation" target (as per Ledoit-Wolf) is highly recommended. This provides a more robust benchmark than a simple identity matrix, as it preserves the cross-sectional correlation structure (0.570) inherent in your synthetic data.
+
+2. **Clarify the "Noise" Metric in Step 5**: To make the "Signal-to-Noise Decomposition" more intuitive, explicitly define the noise component as the *tracking error variance* relative to the target factor. Specifically, calculate the correlation between the portfolio return and the target factor return. A portfolio that captures the factor well should have a correlation near 1.0 with the factor; as $N$ increases and noise dominates, this correlation will drop. Adding this correlation metric alongside the return decomposition will provide a clearer "signal-to-noise" diagnostic.
+
+The plan is otherwise excellent and ready for implementation.
+\end{SUGGESTIONS}
+
