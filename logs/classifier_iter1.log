@@ -1,0 +1,7 @@
+Classifier: Step 1 — Determining archive...
+  Archive: q-fin — The paper focuses on factor mimicking portfolios, Sharpe ratios, and asset pricing, which are core topics within quantitative finance.
+Classifier: Step 2 — Determining subcategory within 'q-fin'...
+  Primary: q-fin.PM
+  Secondary: q-fin.ST, q-fin.GN
+  Justification: The paper focuses on the construction and performance evaluation of factor mimicking portfolios, which is the core subject of Portfolio Management (q-fin.PM). It utilizes statistical and econometric methods to analyze signal-to-noise ratios and portfolio optimization, making Statistical Finance (q-fin.ST) and General Finance (q-fin.GN) highly relevant secondary categories.
+Classification completed in 0 min 3 sec. Cost: $0.0000

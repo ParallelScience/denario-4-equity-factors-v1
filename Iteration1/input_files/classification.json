@@ -1,0 +1,8 @@
+{
+  "primary_category": "q-fin.PM",
+  "secondary_categories": [
+    "q-fin.ST",
+    "q-fin.GN"
+  ],
+  "justification": "The paper focuses on the construction and performance evaluation of factor mimicking portfolios, which is the core subject of Portfolio Management (q-fin.PM). It utilizes statistical and econometric methods to analyze signal-to-noise ratios and portfolio optimization, making Statistical Finance (q-fin.ST) and General Finance (q-fin.GN) highly relevant secondary categories."
+}

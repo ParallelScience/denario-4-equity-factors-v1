@@ -1,0 +1,96 @@
+
+###### PROMPT BEGINS ########
+Human: You are a scientific paper classifier. Your task is to determine the most appropriate top-level arXiv archive for the following paper.
+
+**Paper Title:** Information Ratio Decay and Signal-to-Noise Thresholds in Small-N Factor Mimicking Portfolios
+
+**Abstract:** We investigate the reliability of factor mimicking portfolios (FMPs) constructed from small cross-sections, a setting where idiosyncratic noise can overwhelm the true factor signal. Using a panel dataset with known ground-truth factor loadings and persistent idiosyncratic volatility, we systematically quantify performance degradation by varying the number of assets ($N \in [10, 50]$). We compare FMPs estimated via Ordinary Least Squares (OLS) against characteristic-sorted portfolios, contrasting the recovery of a low-Sharpe (SMB) versus a high-Sharpe (WML) factor. Our findings reveal a critical interaction between a factor's intrinsic signal strength and the optimal portfolio construction methodology. For the low-Sharpe factor, the statistical complexity of OLS proves counterproductive; increasing the cross-sectional size paradoxically amplifies idiosyncratic noise leakage, rendering the estimated premium statistically indistinguishable from zero across all sample sizes. In this high-noise, low-signal regime, a structurally simpler characteristic-sorted portfolio provides a more robust estimate of the true factor premium. Conversely, for the high-Sharpe factor, the OLS-FMP successfully isolates a statistically significant premium once the cross-section reaches a minimum breadth of $N=20$, decisively outperforming the sorting approach which proves structurally misspecified for this factor's data generating process. This study establishes that in high-noise, small-N environments, the minimum data requirements for reliable factor recovery are not absolute but are contingent on the factor's underlying Sharpe ratio, highlighting a crucial trade-off between statistical estimation and structural portfolio design.
+
+**Archives:**
+- astro-ph: Astrophysics — cosmology, galaxies, stellar physics, planetary science, high-energy astrophysics, instrumentation
+- cond-mat: Condensed Matter — materials science, superconductivity, quantum gases, soft matter, statistical mechanics
+- cs: Computer Science — AI, machine learning, NLP, computer vision, algorithms, networking, security, software
+- econ: Economics — econometrics, general economics, theoretical economics
+- eess: Electrical Engineering and Systems Science — signal processing, image/video processing, audio/speech, control
+- gr-qc: General Relativity and Quantum Cosmology — gravitational physics, gravitational waves, black holes
+- hep-ex: High Energy Physics - Experiment — particle physics experiments, collider results
+- hep-lat: High Energy Physics - Lattice — lattice field theory, lattice QCD
+- hep-ph: High Energy Physics - Phenomenology — theoretical particle physics connected to experiment
+- hep-th: High Energy Physics - Theory — string theory, quantum field theory, supersymmetry
+- math: Mathematics — algebra, geometry, topology, analysis, probability, number theory, optimization
+- math-ph: Mathematical Physics — mathematical methods for physics problems
+- nlin: Nonlinear Sciences — chaos, pattern formation, solitons, integrable systems, self-organization
+- nucl-ex: Nuclear Experiment — experimental nuclear physics
+- nucl-th: Nuclear Theory — nuclear structure theory, hadron models, neutron stars
+- physics: Physics (General) — classical, computational, fluid dynamics, optics, plasma, applied, biological, chemical physics
+- q-bio: Quantitative Biology — biomolecules, genomics, neuroscience, populations, quantitative methods
+- q-fin: Quantitative Finance — computational finance, portfolio management, risk, pricing, trading
+- quant-ph: Quantum Physics — quantum information, computation, entanglement, foundations, optics
+- stat: Statistics — methodology, applications, machine learning (with statistical grounding), computation
+
+Select the single most appropriate archive for this paper. If the paper spans multiple fields, choose the one where the paper makes its primary contribution.
+
+###### PROMPT ENDS ########
+
+archive='q-fin' justification='The paper focuses on factor mimicking portfolios, Sharpe ratios, and asset pricing, which are core topics within quantitative finance.'
+###### PROMPT BEGINS ########
+Human: You are a scientific paper classifier. You have already determined that this paper belongs to the **q-fin** archive on arXiv. Now select the specific subcategory.
+
+**Paper Title:** Information Ratio Decay and Signal-to-Noise Thresholds in Small-N Factor Mimicking Portfolios
+
+**Abstract:** We investigate the reliability of factor mimicking portfolios (FMPs) constructed from small cross-sections, a setting where idiosyncratic noise can overwhelm the true factor signal. Using a panel dataset with known ground-truth factor loadings and persistent idiosyncratic volatility, we systematically quantify performance degradation by varying the number of assets ($N \in [10, 50]$). We compare FMPs estimated via Ordinary Least Squares (OLS) against characteristic-sorted portfolios, contrasting the recovery of a low-Sharpe (SMB) versus a high-Sharpe (WML) factor. Our findings reveal a critical interaction between a factor's intrinsic signal strength and the optimal portfolio construction methodology. For the low-Sharpe factor, the statistical complexity of OLS proves counterproductive; increasing the cross-sectional size paradoxically amplifies idiosyncratic noise leakage, rendering the estimated premium statistically indistinguishable from zero across all sample sizes. In this high-noise, low-signal regime, a structurally simpler characteristic-sorted portfolio provides a more robust estimate of the true factor premium. Conversely, for the high-Sharpe factor, the OLS-FMP successfully isolates a statistically significant premium once the cross-section reaches a minimum breadth of $N=20$, decisively outperforming the sorting approach which proves structurally misspecified for this factor's data generating process. This study establishes that in high-noise, small-N environments, the minimum data requirements for reliable factor recovery are not absolute but are contingent on the factor's underlying Sharpe ratio, highlighting a crucial trade-off between statistical estimation and structural portfolio design.
+
+**Methods (if available):** \subsection{Data and Experimental Setup}
+Our analysis is conducted on a simulated monthly panel dataset spanning 120 months, designed to replicate a high-noise environment. The data generating process provides ground-truth values for asset returns, true factor loadings ($\beta_{true}$), and idiosyncratic residuals ($\epsilon_{i,t}$), allowing for a precise decomposition of portfolio performance. The idiosyncratic volatility for each asset is held constant at a significant 3.5\% per month (approximately 12\% annualized). The dataset includes multiple factors, but our investigation focuses on two archetypes: a low-Sharpe factor analogous to Size (SMB) and a high-Sharpe factor analogous to Momentum (WML).
+
+The core of our experimental design involves systematically varying the number of assets, $N$, available for portfolio construction. We create sub-samples of the cross-section with sizes $N \in \{10, 15, 20, 25, 30, 35, 40, 45, 50\}$. For each value of $N$, all estimations and portfolio constructions are performed using a 36-month rolling window. Specifically, for each month $t$ in the out-of-sample period, we use data from month $t-36$ to $t-1$ to estimate model parameters and form portfolio weights. These weights are then applied to the returns in month $t$. This procedure is repeated for the entire 84-month out-of-sample evaluation period (from month 37 to 120).
+
+\subsection{Portfolio Construction Methodologies}
+We compare the efficacy of three distinct portfolio construction techniques for each factor and each cross-sectional size $N$.
+
+\subsubsection{Ideal Factor Mimicking Portfolio}
+As a theoretical benchmark, we construct an ``Ideal FMP''. This portfolio is designed to isolate the impact of factor loading estimation error. Its weights are calculated using the ground-truth factor loadings ($\beta_{true}$) but employ the same sample covariance matrix of returns used by the other methods. This ensures that the Ideal FMP's performance represents an upper bound on what is achievable given the limitations of covariance estimation and finite cross-sectional breadth, but absent the errors-in-variables problem of beta estimation.
+
+\subsubsection{OLS Factor Mimicking Portfolio}
+The primary statistical method under investigation is the Factor Mimicking Portfolio estimated via Ordinary Least Squares (OLS-FMP). For each 36-month rolling window, we first estimate the factor loadings, $\hat{\beta}$, for each of the $N$ assets by regressing their excess returns on the target factor's returns. To ensure the stability and invertibility of the asset covariance matrix, $\Sigma$, especially in small-$N$ settings, we apply the Ledoit-Wolf shrinkage estimator with a constant correlation target. The OLS-FMP weights, $w$, are then calculated as the solution to the standard cross-sectional regression problem:
+\begin{equation}
+w_t = \Sigma_{t, shrink}^{-1}\hat{\beta}_t(\hat{\beta}_t'\Sigma_{t, shrink}^{-1}\hat{\beta}_t)^{-1}
+\end{equation}
+where $\hat{\beta}_t$ are the estimated loadings and $\Sigma_{t, shrink}$ is the shrunk covariance matrix for the estimation window preceding month $t$.
+
+\subsubsection{Characteristic-Sorted Portfolio}
+As a structurally simpler alternative, we construct characteristic-sorted portfolios. These portfolios are long-short and dollar-neutral. For each month $t$, we sort the $N$ assets into quintiles based on a relevant characteristic. The portfolio takes a long position in the top quintile and a short position in the bottom quintile, with weights determined by the characteristic's value (e.g., value-weighted for market capitalization). For the SMB factor, assets are sorted on their market capitalization. For the WML factor, assets are sorted on their lagged 12-1 month cumulative returns.
+
+\subsection{Performance Evaluation and Statistical Analysis}
+The performance of each portfolio strategy is evaluated using a combination of performance metrics, signal decomposition, and rigorous statistical tests.
+
+\subsubsection{Information Ratio}
+The primary performance metric is the annualized Information Ratio (IR), calculated as the ratio of the portfolio's mean out-of-sample excess return to its standard deviation, scaled by $\sqrt{12}$. This metric quantifies the risk-adjusted return and serves as our measure of signal-to-noise for the final portfolio.
+
+\subsubsection{Signal-to-Noise Decomposition}
+To diagnose the source of performance degradation, we leverage the ground-truth data to decompose each portfolio's realized monthly return, $R_{p,t} = w_t' R_t$, into its intended factor component and its unintended noise component. The decomposition is as follows:
+\begin{align}
+R_{factor, t} &= w_t' (\beta_{true} \times F_t) \\
+R_{noise, t} &= w_t' \epsilon_t
+\end{align}
+where $F_t$ is the realized factor return and $\epsilon_t$ is the vector of ground-truth idiosyncratic returns in month $t$. We then compute the variance ratio, defined as $Var(R_{factor}) / Var(R_{noise})$, to directly quantify the degree of idiosyncratic volatility leakage into the portfolio. A lower ratio indicates that the portfolio's variance is dominated by uncompensated noise rather than the target factor signal.
+
+\subsubsection{Statistical Validation}
+To assess the statistical significance of our results, we employ two methods. First, to account for potential autocorrelation in portfolio returns, we compute t-statistics for the Information Ratios using Newey-West standard errors. An absolute t-statistic greater than 1.96 is required for an IR to be considered statistically different from zero at the 95\% confidence level. Second, to establish confidence intervals for the performance difference between the OLS-FMP and the characteristic-sorted portfolios, we conduct a block bootstrap analysis with 1,000 iterations and a block size of 3 months. This procedure allows us to determine the cross-sectional size $N$ at which one methodology becomes statistically superior to the other.
+
+**Available subcategories in q-fin:**
+- q-fin.CP: Computational Finance — Computational methods, including Monte Carlo, PDE, lattice and other numerical methods with applications to finance.
+- q-fin.EC: Economics — Economics and finance interfaces, economic modeling, behavioral economics.
+- q-fin.GN: General Finance — Development of general quantitative methodologies with applications in finance.
+- q-fin.MF: Mathematical Finance — Mathematical and analytical methods of finance, including stochastic, probabilistic and deterministic methods.
+- q-fin.PM: Portfolio Management — Security selection and optimization, capital allocation, investment strategies and performance.
+- q-fin.PR: Pricing of Securities — Valuation and hedging of financial securities, their derivatives, and structured products.
+- q-fin.RM: Risk Management — Measurement and management of financial risks in trading, banking, insurance, corporate finance.
+- q-fin.ST: Statistical Finance — Statistical, econometric and econophysics analyses with applications to financial markets and data.
+- q-fin.TR: Trading and Market Microstructure — Market microstructure, liquidity, exchange and auction design, automated trading, agent-based models.
+
+Select one primary subcategory and up to 3 secondary subcategories (from any archive) that also apply. The primary must be from the list above. Secondary categories may come from any arXiv category if the paper is interdisciplinary.
+
+###### PROMPT ENDS ########
+
+primary_category='q-fin.PM' secondary_categories=['q-fin.ST', 'q-fin.GN'] justification='The paper focuses on the construction and performance evaluation of factor mimicking portfolios, which is the core subject of Portfolio Management (q-fin.PM). It utilizes statistical and econometric methods to analyze signal-to-noise ratios and portfolio optimization, making Statistical Finance (q-fin.ST) and General Finance (q-fin.GN) highly relevant secondary categories.'
