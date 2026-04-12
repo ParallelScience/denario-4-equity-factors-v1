@@ -1,0 +1,54 @@
+\documentclass[]{article}
+
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{natbib}
+\usepackage{graphicx} 
+
+
+\begin{document}
+
+Our analysis reveals a critical dependence of factor portfolio performance on the factor's intrinsic signal strength, the size of the asset universe ($N$), and the chosen construction methodology. The results are presented by first comparing the overall performance decay of different portfolio strategies, then dissecting the underlying signal-to-noise dynamics, and finally establishing statistical thresholds for reliable factor recovery.
+
+\subsection{Performance decay in small cross-sections}
+
+We first evaluate the out-of-sample performance, measured by the annualized Information Ratio (IR), for both the low-Sharpe (SMB) and high-Sharpe (WML) factors across varying cross-sectional sizes. Figure \ref{fig:image0} (top panels) illustrates the performance of the OLS-estimated Factor Mimicking Portfolio (OLS-FMP) and the Characteristic-Sorted portfolio against the theoretical Ideal FMP benchmark.
+
+For the low-Sharpe SMB factor, the two estimation methods exhibit divergent behavior. The OLS-FMP's performance degrades as the cross-section expands; its IR starts at -0.490 for $N=10$ but attenuates towards zero, reaching -0.182 at $N=50$. This suggests that for a weak signal in a high-noise environment, increasing the number of assets introduces more estimation error than diversification benefit. In contrast, the structurally simpler Characteristic-Sorted portfolio proves more robust. Its IR remains stable, starting at -0.262 ($N=10$) and converging to -0.212 ($N=50$), closely matching the true underlying Sharpe ratio of -0.21.
+
+The results are inverted for the high-Sharpe WML factor. The OLS-FMP successfully isolates the strong premium, provided the cross-section is sufficiently large. Its IR climbs from 0.442 at $N=10$ to a peak of 1.126 at $N=20$, before stabilizing at 0.785 for $N=50$. This performance is achieved despite the fact that the Ideal FMP, constructed with true factor loadings, fails entirely for WML (IR degrades to -0.488 at $N=50$). The failure of the Ideal FMP is a direct consequence of the data generating process, where the true WML loading is constant across all assets, making it impossible to isolate via cross-sectional projection. The success of the OLS-FMP implies that the rolling estimation process captures the uniform momentum effect, likely through the regression intercept or collinearity with other factors. Conversely, the Characteristic-Sorted portfolio is structurally misspecified for this factor. Sorting on past returns, when the true loading is constant, amounts to sorting on historical idiosyncratic noise. Consequently, its performance is poor and erratic, with an IR of 0.109 at $N=50$.
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\textwidth]{../input_files/plots/step_5_IR_Decay_Combined_1_20260406_002623.png}
+    \caption{Performance comparison of portfolio construction methodologies for the low-Sharpe SMB (left panels) and high-Sharpe WML (right panels) factors as a function of cross-sectional size (N). The top panels plot the Annualized Information Ratio (IR) for Ideal Factor Mimicking Portfolios (Ideal FMP), OLS-estimated FMPs (OLS-FMP), and Characteristic-Sorted portfolios. For the low-Sharpe SMB factor, the OLS-FMP performance attenuates with increasing N due to idiosyncratic noise leakage, whereas the Characteristic-Sorted portfolio remains more stable. Conversely, for the high-Sharpe WML factor, the OLS-FMP successfully captures the premium for N $\ge$ 20, while the Characteristic-Sorted approach fails. The bottom panels display the IR difference between the OLS-FMP and Characteristic-Sorted portfolios ($\Delta$IR = IR\_{OLS} - IR\_{Char}) with 95\% bootstrap confidence intervals, showing that OLS-FMP is statistically superior for WML, while the two methods become statistically indistinguishable for SMB at N $\ge$ 40.}
+    \label{fig:image0}
+\end{figure*}
+
+\subsection{Idiosyncratic noise leakage as the driver of performance decay}
+
+To understand the mechanism behind the performance decay observed in the SMB OLS-FMP, we decompose the realized portfolio returns into their intended factor component and an unintended idiosyncratic noise component. We quantify the degree of noise contamination using the Noise-to-Signal Ratio (NSR), defined as the variance of the noise component divided by the variance of the factor component.
+
+Figure \ref{fig:image1} shows the evolution of the NSR for the OLS-FMPs. For the low-Sharpe SMB factor, the NSR undergoes a catastrophic explosion as $N$ increases. It begins at 263.8 for $N=10$ and skyrockets to 6572.7 at $N=50$. This demonstrates that for a weak factor signal, the errors in the estimated betas are substantial relative to the true betas. As more assets with poorly estimated loadings are included in the cross-sectional regression, the resulting portfolio weights increasingly amplify idiosyncratic noise, causing the factor signal to be completely overwhelmed.
+
+In stark contrast, the high-Sharpe WML factor exhibits robustness against this degradation. Its NSR remains relatively contained, improving from 511.7 at $N=10$ to 301.9 at $N=50$. The strong true premium of the WML factor provides a sufficient "signal buffer," ensuring that even with estimation errors, the factor component of the portfolio's return remains potent relative to the noise component. This finding confirms that the factor's intrinsic Sharpe ratio is a key determinant of an FMP's vulnerability to idiosyncratic volatility leakage in small-$N$ settings.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{../input_files/plots/step_5_Noise_to_Signal_Ratio_2_20260406_002623.png}
+    \caption{Evolution of the Noise-to-Signal Ratio (NSR) on a logarithmic scale for OLS-estimated Factor Mimicking Portfolios (OLS-FMP) as a function of cross-sectional size (N). For the low-Sharpe SMB factor, the NSR demonstrates a catastrophic increase from 263.8 at N=10 to 6572.7 at N=50, indicating that idiosyncratic volatility leakage from noisy beta estimates overwhelms the factor signal as the cross-section expands. In contrast, the high-Sharpe WML factor shows signal robustness, with its NSR improving from 511.7 to 301.9, highlighting that a strong true premium provides a buffer against estimation error degradation.}
+    \label{fig:image1}
+\end{figure}
+
+\subsection{Statistical thresholds for factor recovery}
+
+Finally, we establish the statistical significance of our findings by computing Newey-West t-statistics for the IRs and using a block bootstrap to generate 95\% confidence intervals for the performance difference between the OLS-FMP and Characteristic-Sorted portfolios ($\Delta \text{IR} = \text{IR}_{\text{OLS}} - \text{IR}_{\text{Char}}$). Given our 84-month out-of-sample period, an absolute IR greater than approximately 0.74 is required to be statistically different from zero at the 95\% confidence level.
+
+For the low-Sharpe SMB factor, the OLS-FMP's IR never reaches this significance threshold for any cross-sectional size $N \in [10, 50]$. The catastrophic noise leakage documented in Figure \ref{fig:image1} ensures that the estimated premium is statistically indistinguishable from zero. This implies that in a high-noise environment, a weak factor signal cannot be reliably recovered using OLS-FMPs constructed from small cross-sections.
+
+For the high-Sharpe WML factor, a clear threshold emerges. The OLS-FMP's IR is not statistically significant for $N=10$ or $N=15$. However, at $N=20$, the IR jumps to 1.126, decisively crossing the significance threshold. The premium remains statistically significant for all $N \ge 20$, establishing a minimum cross-sectional breadth of 20 assets for reliable recovery of this high-Sharpe factor.
+
+The comparison between methodologies, shown in the bottom panels of Figure \ref{fig:image0}, further clarifies the practical implications. For the WML factor, the OLS-FMP is statistically superior to the misspecified Characteristic-Sorted portfolio for nearly all $N \ge 20$. For the SMB factor, the conclusion is more nuanced. While the OLS-FMP is not statistically worse than the Characteristic-Sorted portfolio, the two methods become statistically indistinguishable for $N \ge 40$, as the 95\% confidence interval for their performance difference contains zero. Given that the Characteristic-Sorted portfolio provides a more accurate point estimate of the true factor premium at larger $N$, it represents the more robust and reliable choice for low-Sharpe factors in these data-constrained settings.
+
+\end{document}
+                

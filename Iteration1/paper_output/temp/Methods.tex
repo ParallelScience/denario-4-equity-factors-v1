@@ -1,0 +1,50 @@
+\documentclass[]{article}
+
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{natbib}
+\usepackage{graphicx} 
+
+
+\begin{document}
+
+\subsection{Data and Experimental Setup}
+Our analysis is conducted on a simulated monthly panel dataset spanning 120 months, designed to replicate a high-noise environment. The data generating process provides ground-truth values for asset returns, true factor loadings ($\beta_{true}$), and idiosyncratic residuals ($\epsilon_{i,t}$), allowing for a precise decomposition of portfolio performance. The idiosyncratic volatility for each asset is held constant at a significant 3.5\% per month (approximately 12\% annualized). The dataset includes multiple factors, but our investigation focuses on two archetypes: a low-Sharpe factor analogous to Size (SMB) and a high-Sharpe factor analogous to Momentum (WML).
+
+The core of our experimental design involves systematically varying the number of assets, $N$, available for portfolio construction. We create sub-samples of the cross-section with sizes $N \in \{10, 15, 20, 25, 30, 35, 40, 45, 50\}$. For each value of $N$, all estimations and portfolio constructions are performed using a 36-month rolling window. Specifically, for each month $t$ in the out-of-sample period, we use data from month $t-36$ to $t-1$ to estimate model parameters and form portfolio weights. These weights are then applied to the returns in month $t$. This procedure is repeated for the entire 84-month out-of-sample evaluation period (from month 37 to 120).
+
+\subsection{Portfolio Construction Methodologies}
+We compare the efficacy of three distinct portfolio construction techniques for each factor and each cross-sectional size $N$.
+
+\subsubsection{Ideal Factor Mimicking Portfolio}
+As a theoretical benchmark, we construct an ``Ideal FMP''. This portfolio is designed to isolate the impact of factor loading estimation error. Its weights are calculated using the ground-truth factor loadings ($\beta_{true}$) but employ the same sample covariance matrix of returns used by the other methods. This ensures that the Ideal FMP's performance represents an upper bound on what is achievable given the limitations of covariance estimation and finite cross-sectional breadth, but absent the errors-in-variables problem of beta estimation.
+
+\subsubsection{OLS Factor Mimicking Portfolio}
+The primary statistical method under investigation is the Factor Mimicking Portfolio estimated via Ordinary Least Squares (OLS-FMP). For each 36-month rolling window, we first estimate the factor loadings, $\hat{\beta}$, for each of the $N$ assets by regressing their excess returns on the target factor's returns. To ensure the stability and invertibility of the asset covariance matrix, $\Sigma$, especially in small-$N$ settings, we apply the Ledoit-Wolf shrinkage estimator with a constant correlation target. The OLS-FMP weights, $w$, are then calculated as the solution to the standard cross-sectional regression problem:
+\begin{equation}
+w_t = \Sigma_{t, shrink}^{-1}\hat{\beta}_t(\hat{\beta}_t'\Sigma_{t, shrink}^{-1}\hat{\beta}_t)^{-1}
+\end{equation}
+where $\hat{\beta}_t$ are the estimated loadings and $\Sigma_{t, shrink}$ is the shrunk covariance matrix for the estimation window preceding month $t$.
+
+\subsubsection{Characteristic-Sorted Portfolio}
+As a structurally simpler alternative, we construct characteristic-sorted portfolios. These portfolios are long-short and dollar-neutral. For each month $t$, we sort the $N$ assets into quintiles based on a relevant characteristic. The portfolio takes a long position in the top quintile and a short position in the bottom quintile, with weights determined by the characteristic's value (e.g., value-weighted for market capitalization). For the SMB factor, assets are sorted on their market capitalization. For the WML factor, assets are sorted on their lagged 12-1 month cumulative returns.
+
+\subsection{Performance Evaluation and Statistical Analysis}
+The performance of each portfolio strategy is evaluated using a combination of performance metrics, signal decomposition, and rigorous statistical tests.
+
+\subsubsection{Information Ratio}
+The primary performance metric is the annualized Information Ratio (IR), calculated as the ratio of the portfolio's mean out-of-sample excess return to its standard deviation, scaled by $\sqrt{12}$. This metric quantifies the risk-adjusted return and serves as our measure of signal-to-noise for the final portfolio.
+
+\subsubsection{Signal-to-Noise Decomposition}
+To diagnose the source of performance degradation, we leverage the ground-truth data to decompose each portfolio's realized monthly return, $R_{p,t} = w_t' R_t$, into its intended factor component and its unintended noise component. The decomposition is as follows:
+\begin{align}
+R_{factor, t} &= w_t' (\beta_{true} \times F_t) \\
+R_{noise, t} &= w_t' \epsilon_t
+\end{align}
+where $F_t$ is the realized factor return and $\epsilon_t$ is the vector of ground-truth idiosyncratic returns in month $t$. We then compute the variance ratio, defined as $Var(R_{factor}) / Var(R_{noise})$, to directly quantify the degree of idiosyncratic volatility leakage into the portfolio. A lower ratio indicates that the portfolio's variance is dominated by uncompensated noise rather than the target factor signal.
+
+\subsubsection{Statistical Validation}
+To assess the statistical significance of our results, we employ two methods. First, to account for potential autocorrelation in portfolio returns, we compute t-statistics for the Information Ratios using Newey-West standard errors. An absolute t-statistic greater than 1.96 is required for an IR to be considered statistically different from zero at the 95\% confidence level. Second, to establish confidence intervals for the performance difference between the OLS-FMP and the characteristic-sorted portfolios, we conduct a block bootstrap analysis with 1,000 iterations and a block size of 3 months. This procedure allows us to determine the cross-sectional size $N$ at which one methodology becomes statistically superior to the other.
+
+\end{document}
+                

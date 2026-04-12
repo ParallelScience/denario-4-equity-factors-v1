@@ -1,0 +1,14 @@
+\documentclass[]{article}
+
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{natbib}
+\usepackage{graphicx} 
+
+
+\begin{document}
+
+We investigate the reliability of factor mimicking portfolios (FMPs) constructed from small cross-sections, a setting where idiosyncratic noise can overwhelm the true factor signal. Using a panel dataset with known ground-truth factor loadings and persistent idiosyncratic volatility, we systematically quantify performance degradation by varying the number of assets ($N \in [10, 50]$). We compare FMPs estimated via Ordinary Least Squares (OLS) against characteristic-sorted portfolios, contrasting the recovery of a low-Sharpe (SMB) versus a high-Sharpe (WML) factor. Our findings reveal a critical interaction between a factor's intrinsic signal strength and the optimal portfolio construction methodology. For the low-Sharpe factor, the statistical complexity of OLS proves counterproductive; increasing the cross-sectional size paradoxically amplifies idiosyncratic noise leakage, rendering the estimated premium statistically indistinguishable from zero across all sample sizes. In this high-noise, low-signal regime, a structurally simpler characteristic-sorted portfolio provides a more robust estimate of the true factor premium. Conversely, for the high-Sharpe factor, the OLS-FMP successfully isolates a statistically significant premium once the cross-section reaches a minimum breadth of $N=20$, decisively outperforming the sorting approach which proves structurally misspecified for this factor's data generating process. This study establishes that in high-noise, small-N environments, the minimum data requirements for reliable factor recovery are not absolute but are contingent on the factor's underlying Sharpe ratio, highlighting a crucial trade-off between statistical estimation and structural portfolio design.
+
+\end{document}
+                

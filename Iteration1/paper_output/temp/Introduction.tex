@@ -1,0 +1,20 @@
+\documentclass[]{article}
+
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{natbib}
+\usepackage{graphicx} 
+
+
+\begin{document}
+
+Factor investing has become a central paradigm in modern asset management, aiming to harvest systematic risk premia through portfolios designed to track specific economic factors. The primary instrument for this purpose is the factor mimicking portfolio (FMP), constructed to maximize its correlation with a target factor. While the theory behind FMPs is well-established, their practical implementation is hindered by a fundamental challenge: true factor loadings are unobservable and must be estimated from historical data. This estimation process inevitably introduces error, causing the resulting portfolio weights to capture not only the desired factor signal but also a substantial amount of uncompensated idiosyncratic noise, thereby degrading the portfolio's signal-to-noise ratio.
+
+This problem becomes particularly acute in environments with a small cross-section of available assets, a common constraint for managers focusing on specialized industries, niche markets, or alternative asset classes. In these "small-N" settings, the power of diversification to mitigate idiosyncratic risk is severely limited. Consequently, estimation errors in factor loadings are not averaged out and can lead to portfolio weights that inadvertently amplify firm-specific noise, potentially overwhelming the target factor premium. This raises critical questions for both researchers and practitioners: How does the performance of an FMP, as measured by its Information Ratio, decay as the asset universe shrinks? Is there an identifiable threshold for the number of assets, $N$, below which a factor signal can no longer be reliably distinguished from background noise? And crucially, how does this threshold depend on the intrinsic strength of the factor itself?
+
+This paper directly addresses these questions by quantifying the performance degradation of FMPs in a controlled, high-noise environment. We leverage a panel dataset with a known ground-truth data generating process, which provides the true factor loadings for each asset. This unique setting allows us to construct an ideal benchmark portfolio and precisely isolate the impact of estimation error. By systematically varying the number of assets ($N$) used in portfolio construction, from 50 down to 10, we can directly measure the decay in the signal-to-noise ratio and identify the point at which estimated factor premia become statistically indistinguishable from zero. Our methodology enables a clean decomposition of realized portfolio returns into the intended factor component and the unintended leakage from idiosyncratic volatility.
+
+Our investigation centers on a direct comparison of two widely used portfolio construction techniques: the statistically-derived FMP estimated via Ordinary Least Squares (OLS) and the simpler, heuristic approach of characteristic-sorted portfolios. We evaluate the efficacy of these methods for two distinct types of factors: a low-Sharpe factor, where the signal is weak relative to typical levels of idiosyncratic noise, and a high-Sharpe factor, where the signal is strong. We demonstrate that the minimum data requirements and the optimal construction methodology for successful factor replication are not universal. Instead, they are contingent on a crucial interplay between the factor's intrinsic signal strength, the size of the asset universe, and the chosen portfolio construction technique. Our findings offer critical insights into the practical limits of factor investing and provide guidance on navigating the trade-off between statistical complexity and structural robustness in data-constrained settings.
+
+\end{document}
+                

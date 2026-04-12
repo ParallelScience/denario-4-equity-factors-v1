@@ -1,0 +1,32 @@
+/opt/denario-venv/lib/python3.12/site-packages/denario/langgraph_agents/paper_module/LaTeX/AAS_keywords.txt
+Abstract found on Abstract.tex...
+Extracting UNESCO keywords.......
+Found 2 plot files to process....
+Plot files: ['step_5_IR_Decay_Combined_1_20260406_002623.png', 'step_5_Noise_to_Signal_Ratio_2_20260406_002623.png']
+  Level 1 domains: ['ECONOMIC SCIENCES', 'MATHEMATICS', 'LOGIC']
+  Level 2 sub-fields for ECONOMIC SCIENCES: ['Economic theory', 'General economics', 'Sectorial economics', 'Other economic specialities (specify)']
+  Level 3 areas for Economic theory: ['Economic equilibrium', 'Economic fluctuations', 'Economic forecasting', 'Investment theory', 'Macro-economic theory', 'Micro-economic theory']
+  Level 3 areas for General economics: ['Other (specify)', 'Other (specify)', 'Other (specify)', 'Other (specify)', 'Other (specify)', 'Other (specify)']
+  Level 3 areas for Sectorial economics: ['Finance and insurance', 'Research and development', 'Trade and commerce', 'Community', 'social and personal services', 'Construction', 'Manufacturing']
+  Level 2 sub-fields for MATHEMATICS: ['Numerical analysis', 'Operations research', 'Probability', 'Statistics']
+  Level 3 areas for Numerical analysis: ['Algorithm construction', 'Error analysis', 'Interpolation', 'approximation and curve fitting', 'Iterative methods', 'Linear equations', 'Matrices']
+  Level 3 areas for Operations research: ['Activity analysis', 'Control systems', 'Linear programming', 'Non-linear programming', 'Systems formulation', 'Systems reliability']
+  Level 3 areas for Probability: ['Application of probability', 'Stochastic processes', 'Markov processes', 'Limit theorems', 'Analytic probability theory', 'Foundations of probability']
+  Level 3 areas for Statistics: ['Analytical statistics', 'Data analysis', 'Multivariate analysis', 'Stochastic theory and time series analysis', 'Techniques of statistical inference', 'Techniques of statistical prediction']
+  Level 2 sub-fields for LOGIC: ['Application of logic', 'Deductive logic', 'Inductive logic', 'Methodology']
+  Level 3 areas for Deductive logic: ['Analogy', 'Formal logic', 'Formal systems', 'Generalization', 'Mathematical logic', 'Symbolic logic']
+  Level 3 areas for Inductive logic: ['Induction', 'Probability', 'Induction', 'Probability', 'Induction', 'Probability']
+  Level 3 areas for Methodology: ['Scientific method', 'Scientific method', 'Scientific method', 'Scientific method', 'Scientific method', 'Scientific method']
+  Final UNESCO keywords: Finance and insurance, Investment theory, Statistics, Data analysis, Multivariate analysis, Stochastic theory and time series analysis, Techniques of statistical inference, Techniques of statistical prediction
+........UNESCO keywords generated
+✅✅...............Captions generated
+✅................Figures generated
+✅.............Introduction written
+✅..................Methods written
+✅..................Results written
+✅..............Conclusions written
+Compiling paper_v1_preliminary...✅✅
+✅..........Refined results written
+Compiling paper_v2_no_citations..✅✅
+Paper written in 4 min 33 sec.
+Cost: $0.368
